@@ -1,0 +1,50 @@
+# blueprint.yaml
+slug: blueprint-gen4-location
+type: Tutorial
+category: "Sensors and data collection"
+expertiseLevel: "Intermediate"               # Beginner | Intermediate | Advanced
+tags: ["GNSS", "Location", "Cellular", "Wi-Fi", "Console"]
+icon: assets/hero.jpg                        # relative path to an image or SVG
+gitrepo: https://github.com/particle-iot/blueprint-gen4-location
+name: "Gen 4 Location Tracking"
+shortDescription: "Track Gen 4 device location using GNSS, Wi-Fi, and cellular tower fusion with automatic fallback."
+version: 1.0.0                              # use SemVer
+models: ["M404", "M524", "B504e"]
+language: ["C++"]
+cloudServices: []
+integrations: []
+supportedDevices:
+  - name: Muon (with M404 or B504e)
+    link: https://docs.particle.io/reference/datasheets/m-series/muon-datasheet/
+  - name: M-SoM (M404)
+    link: https://docs.particle.io/reference/datasheets/m-series/m-som-datasheet/
+  - name: M-SoM (M524)
+    link: https://docs.particle.io/reference/datasheets/m-series/m-som-datasheet/
+  - name: B5-SoM (B504e)
+    link: https://docs.particle.io/reference/datasheets/b-series/b5som-datasheet/
+webIdeLink:
+webSetupLink:
+hardwareDependencies:
+  - name: Muon or compatible Gen 4 carrier board
+    link: https://docs.particle.io/reference/datasheets/m-series/muon-datasheet/
+  - name: M404, M524, or B504e module
+  - name: USB cable
+introduction: |
+  A location tracking application for Particle Gen 4 devices that intelligently combines
+  GNSS, Wi-Fi, and cellular tower geolocation to provide robust positioning even in
+  challenging environments.
+description: |
+  This tutorial demonstrates how to build a location tracking application using Particle
+  Gen 4 devices with Quectel cellular modems. The firmware uses a non-blocking state machine
+  to manage the location lifecycle and automatically falls back from GNSS to Wi-Fi/cell tower
+  fusion when satellite visibility is poor. The architecture is designed for easy expansion
+  with future features like motion detection, geofencing, and sleep management.
+additionalResources:
+  - title: Particle Location Fusion Guide
+    link: https://docs.particle.io/reference/tracker/location-fusion/
+  - title: QuectelGnssRK Library
+    link: https://github.com/rickkas7/QuectelGnssRK
+  - title: LocationFusionRK Library
+    link: https://github.com/rickkas7/LocationFusionRK
+  - title: Particle Developer Docs
+    link: https://developer.particle.io/
