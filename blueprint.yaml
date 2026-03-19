@@ -4,7 +4,7 @@ type: Tutorial
 category: "Sensors and data collection"
 expertiseLevel: "Intermediate"               # Beginner | Intermediate | Advanced
 tags: ["GNSS", "Location", "Cellular", "Wi-Fi", "Console"]
-icon: assets/hero.jpg                        # relative path to an image or SVG
+icon: assets/hello-world.svg                        # relative path to an image or SVG
 gitrepo: https://github.com/particle-iot/blueprint-gen4-location
 name: "Gen 4 Location Tracking"
 shortDescription: "Track Gen 4 device location using GNSS, Wi-Fi, and cellular tower fusion with automatic fallback."
