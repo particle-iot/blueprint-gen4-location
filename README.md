@@ -1,6 +1,6 @@
 # Gen 4 Location Tracking
 
-**Description:**
+### Description
 
 Track the location of Particle Gen 4 devices using a combination of GNSS, Wi-Fi, and cellular tower geolocation with automatic fallback when satellite visibility is poor.
 
