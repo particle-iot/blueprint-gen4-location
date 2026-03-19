@@ -40,8 +40,8 @@ Learn how to implement robust location tracking on Particle Gen 4 devices using 
 
 Dependencies are declared in [project.properties](project.properties) and installed automatically during compilation:
 
-- [`LocationFusionRK`](https://github.com/rickkas7/LocationFusionRK) v0.0.4 — Orchestrates multi-source location fusion (GNSS, Wi-Fi, cell towers)
-- [`QuectelGnssRK`](https://github.com/rickkas7/QuectelGnssRK) v0.0.1 — Interfaces with the Quectel modem's built-in GNSS receiver
+- [`LocationFusionRK`](https://github.com/rickkas7/LocationFusionRK) v0.0.4, orchestrates multi-source location fusion (GNSS, Wi-Fi, cell towers)
+- [`QuectelGnssRK`](https://github.com/rickkas7/QuectelGnssRK) v0.0.1, interfaces with the Quectel modem's built-in GNSS receiver
 
 > **Note:** LocationFusionRK v0.0.4 or later is required. Earlier versions do not support the B504e device.
 
@@ -57,7 +57,7 @@ Dependencies are declared in [project.properties](project.properties) and instal
    ```bash
    particle serial monitor --follow
    ```
-5. **Verify the cycle** — you should see the device connect to cloud, acquire a location, publish a `loc` event, and receive a `loc-enhanced` response.
+5. **Verify the cycle**, you should see the device connect to cloud, acquire a location, publish a `loc` event, and receive a `loc-enhanced` response.
 
 ---
 
@@ -79,15 +79,19 @@ LOCATION_WAITING
 IDLE ←→ LOCATION_BUILDING  (repeats every 5 minutes)
 ```
 
-**Cloud-First Strategy:** The device connects to Particle Cloud *before* starting any location acquisition. This is required because Wi-Fi and cell tower fusion relies on active cloud connectivity — without it, the device can only use raw GNSS.
+| State | Description |
+|-------|-------------|
+| `WAITING_FOR_CLOUD` | Initial state after boot, waiting for Particle Cloud connection |
+| `WAITING_FIRST_PUBLISH` | Cloud connected, waiting for the first location publish to start |
+| `IDLE` | Normal operation between location publishes |
+| `LOCATION_BUILDING` | Actively collecting location data (GNSS / Wi-Fi / cell) |
+| `LOCATION_PUBLISHING` | Location data published, waiting for send confirmation |
+| `LOCATION_WAITING` | Waiting for cloud-enhanced location response |
+| `ERROR_RECOVERY` | Handling publish failures with a 60-second retry delay |
 
-**Location Priority & Fallback:**
-1. **GNSS** (90-second timeout) — most accurate, requires clear sky view
-2. **Location Fusion** — if GNSS times out, `LocationFusionRK` sends Wi-Fi access point and cell tower data to Particle Cloud, which returns enhanced coordinates
+**Non-Blocking Architecture:** The state machine runs once per second using `millis()`-based timing. Between ticks, `loop()` returns immediately so system threads and background tasks continue uninterrupted. `LocationFusionRK` performs all GNSS and location fusion work in background threads, meaning the state machine only monitors status rather than waiting on I/O.
 
-> **M404 (BG95 modem) limitation:** GNSS and cellular data cannot run simultaneously on this modem. The library handles this automatically, but brief connectivity interruptions may occur during GNSS acquisition. The M524 does not have this limitation.
-
-The `loop()` function is intentionally minimal to make expansion easy:
+Additional code can be added to `loop()` without touching any location logic:
 
 ```cpp
 void loop() {
@@ -96,6 +100,19 @@ void loop() {
     // Add your features here without touching location logic
 }
 ```
+
+**Cloud-First Strategy:** The device connects to Particle Cloud *before* starting any location acquisition. This is required because Wi-Fi and cell tower fusion relies on active cloud connectivity, and without it the device can only use raw GNSS.
+
+**Location Priority & Fallback:**
+1. **GNSS** (90-second timeout), most accurate, requires clear sky view
+2. **Location Fusion**, if GNSS times out, `LocationFusionRK` sends Wi-Fi access point and cell tower data to Particle Cloud, which returns enhanced coordinates
+
+This strategy ensures a location fix is always obtained, even in challenging environments:
+- **Indoor locations**, no GNSS signal, but Wi-Fi access points provide positioning
+- **Urban canyons**, weak GNSS from building obstruction, but dense cellular coverage compensates
+- **Remote areas**, strong GNSS with clear sky, limited Wi-Fi or cellular fallback needed
+
+> **M404 (BG95 modem) limitation:** GNSS and cellular data cannot run simultaneously on this modem. The library handles this automatically, but brief connectivity interruptions may occur during GNSS acquisition. The M524 does not have this limitation.
 
 ---
 
@@ -112,7 +129,7 @@ void loop() {
 State: WAITING_FOR_CLOUD -> WAITING_FIRST_PUBLISH
 State: WAITING_FIRST_PUBLISH -> LOCATION_BUILDING
 State: LOCATION_BUILDING -> LOCATION_PUBLISHING
-Enhanced Position: lat=37.422408, lon=-122.084066, accuracy=15.0m
+Enhanced Position: lat=XX.XXXXXX, lon=-XXX.XXXXXX, accuracy=XX.Xm
 State: LOCATION_WAITING -> IDLE
 ```
 
@@ -120,8 +137,8 @@ State: LOCATION_WAITING -> IDLE
 
 ### Topics Covered
 
-- [`LocationFusionRK`](https://github.com/rickkas7/LocationFusionRK) — multi-source location orchestration
-- [`QuectelGnssRK`](https://github.com/rickkas7/QuectelGnssRK) — Quectel modem GNSS interface
+- [`LocationFusionRK`](https://github.com/rickkas7/LocationFusionRK), multi-source location orchestration
+- [`QuectelGnssRK`](https://github.com/rickkas7/QuectelGnssRK), Quectel modem GNSS interface
 - Non-blocking state machine pattern
 - `Particle.publish()` and `loc-enhanced` cloud events
 - Wi-Fi + GNSS + cellular tower location fusion
