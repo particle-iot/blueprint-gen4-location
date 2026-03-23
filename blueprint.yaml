@@ -1,7 +1,7 @@
 # blueprint.yaml
 slug: blueprint-gen4-location
 type: Tutorial
-category: "Sensors and data collection"
+category: "Reference applications"
 expertiseLevel: "Intermediate"               # Beginner | Intermediate | Advanced
 tags: ["GNSS", "Location", "Cellular", "Wi-Fi", "Console"]
 icon: assets/hello-world.svg                        # relative path to an image or SVG
